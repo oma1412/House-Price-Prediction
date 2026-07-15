@@ -1,60 +1,29 @@
 import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
 
-# -------------------------
-# Load the dataset
-# -------------------------
+# Load Dataset
+
 df = pd.read_csv("dataset/Housing.csv")
 
-# -------------------------
-# Basic Exploration
-# -------------------------
-print("First 5 Rows")
+# Display Dataset Information
+
+print(" FIRST 5 ROWS ")
 print(df.head())
 
-print("\nShape of Dataset")
+print("\n SHAPE ")
 print(df.shape)
 
-print("\nColumn Names")
+print("\n COLUMNS ")
 print(df.columns)
 
-print("\nDataset Information")
+print("\n INFO ")
 df.info()
 
-print("\nStatistical Summary")
+print("\n DESCRIPTION ")
 print(df.describe())
 
-# -------------------------
-# Separate Features and Target
-# -------------------------
-X = df.drop("price", axis=1)
-y = df["price"]
-
-print("\nFeatures (X)")
-print(X.head())
-
-print("\nTarget (y)")
-print(y.head())
-
-# -------------------------
-# Check Unique Values
-# -------------------------
-print("\nMainroad Values")
-print(df["mainroad"].unique())
-
-print("\nGuestroom Values")
-print(df["guestroom"].unique())
-
-print("\nBasement Values")
-print(df["basement"].unique())
-
-print("\nAirconditioning Values")
-print(df["airconditioning"].unique())
-
-print("\nPreferred Area Values")
-print(df["prefarea"].unique())
-
-print("\nFurnishing Status Values")
-print(df["furnishingstatus"].unique())
+# Encode Binary Columns (Yes / No)
 
 binary_columns = [
     "mainroad",
@@ -66,7 +35,60 @@ binary_columns = [
 ]
 
 for column in binary_columns:
-    df[column] = df[column].map({"yes": 1, "no": 0})
-df = pd.get_dummies(df, columns=["furnishingstatus"],dtype=int)
+    df[column] = df[column].map({
+        "yes": 1,
+        "no": 0
+    })
 
+# One Hot Encoding
+
+df = pd.get_dummies(
+    df,
+    columns=["furnishingstatus"],
+    dtype=int
+)
+
+print("\n DATA AFTER ENCODING ")
 print(df.head())
+
+# Separate Features and Target
+
+X = df.drop("price", axis=1)
+y = df["price"]
+
+print("\n FEATURES ")
+print(X.head())
+
+print("\n TARGET ")
+print(y.head())
+
+# Train Test Split
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X,
+    y,
+    test_size=0.2,
+    random_state=42
+)
+
+print("\n TRAINING DATA ")
+print(X_train.shape)
+
+print("\n TESTING DATA ")
+print(X_test.shape)
+
+print("\n TRAINING TARGET ")
+print(y_train.shape)
+
+print("\n TESTING TARGET")
+print(y_test.shape)
+
+# Create Linear Regression Model
+
+model = LinearRegression()
+
+# Train the Model
+
+model.fit(X_train, y_train)
+
+print("\n Model Trained Successfully!")
